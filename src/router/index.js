@@ -1,20 +1,48 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/home/HomeView.vue'
+import MySupportsView from '../views/supports/MySupportsView.vue'
+import ModulesAndLessonsView from '../views/modules/ModulesAndLessonsView.vue'
+import AuthView from '../views/auth/AuthView.vue'
+import ForgetPasswordView from '../views/auth/ForgetPasswordView.vue'
 
 const routes = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: '/campus',
+    component: () => import('@/layouts/campus/DefaultTemplate.vue'),
+    children: [
+      {
+        path: 'modulos',
+        name: 'campus.modules',
+        component: ModulesAndLessonsView
+      },
+      {
+        path: 'minhas-duvidas',
+        name: 'campus.my.supports',
+        component: MySupportsView
+      },
+      {
+        path: '',
+        name: 'campus.home',
+        component: HomeView
+      }
+    ]
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+    path: '/',
+    component: () => import('@/layouts/auth/DefaultTemplate.vue'),
+    children: [
+      {
+        path: '',
+        name: 'auth',
+        component: AuthView
+      },
+      {
+        path: '/recuperar-senha',
+        name: 'forget.password',
+        component: ForgetPasswordView
+      },
+    ]
+  },
 ]
 
 const router = createRouter({
