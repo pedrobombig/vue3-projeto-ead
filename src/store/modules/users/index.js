@@ -22,8 +22,9 @@ export default
     },
 
     actions: {
-        auth (_, params) {
-            AuthService.auth(params)
+        auth ({state}, params) {
+            state.loggedIn
+            return AuthService.auth(params)
         }
     },
 }

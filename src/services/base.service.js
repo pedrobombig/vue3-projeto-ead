@@ -1,7 +1,6 @@
 import Http from "./http.init"
 
 export default class BaseService {
-
     constructor() {
         this.instance = new BaseService
     }

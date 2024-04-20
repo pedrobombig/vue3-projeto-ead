@@ -1,15 +1,24 @@
 <template>
-        <form action="/dist/index.html" method="">
+        <form>
             <div class="groupForm">
                 <i class="far fa-envelope"></i>
-                <input type="email" name="email" placeholder="Email" required>
+                <input type="email" name="email" placeholder="Email" v-model="email" required>
             </div>
+
             <div class="groupForm">
                 <i class="far fa-key"></i>
-                <input type="password" name="password" placeholder="Senha" required>
+                <input type="password" name="password" placeholder="Senha" v-model="password" required>
                 <i class="far fa-eye buttom"></i>
             </div>
-            <button class="btn primary" type="submit" @click.prevent="auth">Login</button>
+
+            <button 
+                :class="['btn', 'primary', loading ? 'loading' : '']" 
+                type="submit" 
+                @click.prevent="auth"
+            >
+                <span v-if="loading">Enviando...</span>
+                <span v-else>Login</span>
+            </button>
         </form>
         <span>
             <p class="fontSmall">
@@ -21,21 +30,34 @@
 <script>
     import router from '@/router'
     import { useStore } from 'vuex'
+    import { ref } from 'vue'
 
     export default {
         name: "AuthView",
         
         setup() {
             const store = useStore()
-            const login = () => router.push({name: 'campus.home'})
+            const email = ref('pedro.bombig@gmail.com')
+            const password = ref('password')
+            const loading = ref(false)
 
             const auth = () => {
-                store.dispatch('auth', { email: 'pedro@gmail.com', password: '123456', device_name: 'authByvue3' })
+                loading.value = true
+                store.dispatch('auth', {
+                     email: email.value, 
+                     password: password.value, 
+                     device_name: 'desktop' 
+                })
+                .then(() => router.push({name: 'campus.home'}))
+                .catch(error => alert(error))
+                .finally(() => loading.value = false)
             }
 
             return {
-                login,
-                auth
+                auth,
+                email,
+                password,
+                loading,
             }
         }
     }
