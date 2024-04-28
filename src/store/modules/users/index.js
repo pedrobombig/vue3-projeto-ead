@@ -1,4 +1,5 @@
 import AuthService from "@/services/auth.service"
+import ResetPasswordService from "@/services/password.reset.service"
 
 export default
 {
@@ -11,8 +12,8 @@ export default
     },
 
     mutations: {
-        SET_USER (state){
-            state.user
+        SET_USER (state, user) {
+            state.user = user
             state.loggedIn = true
         },
         LOGOUT (state) {
@@ -22,9 +23,30 @@ export default
     },
 
     actions: {
-        auth ({state}, params) {
-            state.loggedIn
+        auth ({dispatch}, params) {
             return AuthService.auth(params)
+                .then(() => dispatch('getMe'))
+        },
+
+        getMe ({commit}) {
+            commit('CHANGE_LOADING', true)
+
+            AuthService.getMe()
+                .then(user => commit('SET_USER', user))
+                .finally(() => commit('CHANGE_LOADING', false))
+
+        },
+
+        forgetPassword(_, params) {
+            return ResetPasswordService.forgetPassword(params)
+        },
+
+        logout({commit}) {
+            commit('CHANGE_LOADING', true)
+            
+            return AuthService.logout()
+                .then(() => commit('LOGOUT'))
+                .finally(() => commit('CHANGE_LOADING', false))
         }
     },
 }

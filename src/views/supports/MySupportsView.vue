@@ -12,10 +12,30 @@
                     
                     <div class="modules">
                       <ul class="classes">
-                        <li>Todos</li>
-                        <li>Aguardando Minha Resposta</li>
-                        <li>Aguardando Professor</li>
-                        <li>Finalizados</li>
+                        <li
+                          :class="{active : status === ''}"
+                          @click.prevent="getMySupportsWithStatus('')"
+                        >
+                          Todos
+                        </li>
+                        <li
+                          :class="{active : status === 'A'}"
+                          @click.prevent="getMySupportsWithStatus('A')"
+                        >
+                          Aguardando Minha Resposta
+                        </li>
+                        <li
+                          :class="{active : status === 'P'}"
+                          @click.prevent="getMySupportsWithStatus('P')"
+                        >
+                          Aguardando Professor
+                        </li>
+                        <li
+                          :class="{active : status === 'C'}"
+                          @click.prevent="getMySupportsWithStatus('C')"
+                        >
+                          Finalizados
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -27,6 +47,12 @@
                           <supports-view />
                         </div>
                     </div>
+
+                    <pagination-view 
+                      :pagination="mySupports"
+                      @changePage="changePage"
+                    />
+
                 </div>
             </div>
         </div>
@@ -34,14 +60,44 @@
 </template>
 
 <script>
+  import { computed, onMounted, ref } from 'vue'
+  import { useStore } from 'vuex'
   import SupportsView from '@/components/SupportsView.vue'
   import PageTitleView from '@/components/PageTitleView.vue'
+  import PaginationView from '@/components/PaginationView.vue'
 
   export default {
     name: 'MySupportsView',
     components: {
       SupportsView,
       PageTitleView,
+      PaginationView
+    },
+    setup() {
+      const store = useStore()
+      const status = ref('')
+      const mySupports = computed(() => store.state.supports.supports)
+
+      onMounted(() => store.dispatch('getMySupports', {status:status.value}))
+
+
+      const getMySupportsWithStatus = (newStatus) => {
+        status.value = newStatus
+
+        store.dispatch('getMySupports', {status: newStatus})
+      }
+
+      const changePage = (page) => store.dispatch('getMySupports', {
+        status: status.value,
+        page
+      })
+
+      return {
+        status,
+        getMySupportsWithStatus,
+        mySupports,
+        changePage
+      }
     }
   }
 </script>
